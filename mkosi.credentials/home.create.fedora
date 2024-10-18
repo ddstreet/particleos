@@ -1,0 +1,10 @@
+{
+  "userName": "fedora",
+  "shell": "/bin/bash",
+  "secret": {
+    "password": [ "passw0rd" ]
+  },
+  "privileged": {
+    "hashedPasswd": [ "$y$j9T$LmDbr9go8Ng2y28xsqEBi1$DatVBQbySaUQKz4OnjlahZyR2foWANqEOLf6ZO8mTr0" ]
+  }
+}
