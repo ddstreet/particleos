@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 set -e
 
+# Remove the tmpfiles-generated symlinks, as we don't want the factory symlinks to point to themselves
+find "$BUILDROOT/etc" -type l -lname '/usr/share/factory/etc/*' -delete
+
 # Capture the entirety of /etc in /usr/share/factory/etc so we can use
 # systemd-tmpfiles to symlink individual directories from it to /etc.
 cp --archive --no-target-directory --update=none "$BUILDROOT/etc" "$BUILDROOT/usr/share/factory/etc"
