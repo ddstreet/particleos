@@ -1,0 +1,35 @@
+#!/bin/bash
+# SPDX-License-Identifier: LGPL-2.1-or-later
+#
+# Create IPE policy and stage it for signing
+
+set -e
+set -x
+
+mkdir -p hashes/ipe
+
+# When a single build has multiple images, postoutput is called for each image,
+# so make sure the hashes.cpio from the previous stages gets its content preserved
+if [ -f /usr/src/packages/OTHER/hashes.cpio.rsasign ]; then
+    pushd hashes
+    cpio -idm </usr/src/packages/OTHER/hashes.cpio.rsasign
+    popd
+fi
+
+cat <<EOF >hashes/ipe/ipe-policy
+policy_name=ipe-policy policy_version=0.0.1
+DEFAULT action=ALLOW
+
+DEFAULT op=EXECUTE action=DENY
+op=EXECUTE boot_verified=TRUE action=ALLOW
+op=EXECUTE dmverity_signature=TRUE action=ALLOW
+EOF
+
+# Pack everything into a CPIO archive and place it where OBS expects it
+pushd hashes
+find . -type f | cpio -H newc -o >"$OUTPUTDIR/hashes.cpio.rsasign"
+popd
+rm -rf hashes
+
+echo "Staging the following files for signing in $OUTPUTDIR:"
+cpio -t <"$OUTPUTDIR/hashes.cpio.rsasign"
